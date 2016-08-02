@@ -146,11 +146,11 @@ if ref_data_info['data_source'] == 'rcmed':
     max_lon = np.min([max_lon, ref_dataset.lons.max()])
 bounds = Bounds(min_lat, max_lat, min_lon, max_lon, start_time, end_time)
 
-ref_dataset = dsp.subset(ref_dataset, bounds)
+ref_dataset = dsp.subset(bounds,ref_dataset)
 if ref_dataset.temporal_resolution() != temporal_resolution:
     ref_dataset = dsp.temporal_rebin(ref_dataset, temporal_resolution)
 for idata,dataset in enumerate(model_datasets):
-    model_datasets[idata] = dsp.subset(dataset, bounds)
+    model_datasets[idata] = dsp.subset(bounds,dataset)
     if dataset.temporal_resolution() != temporal_resolution:
         model_datasets[idata] = dsp.temporal_rebin(dataset, temporal_resolution)
 
@@ -159,9 +159,9 @@ month_start = time_info['month_start']
 month_end = time_info['month_end']
 average_each_year = time_info['average_each_year']
 
-ref_dataset = dsp.temporal_subset(ref_dataset,month_start, month_end,average_each_year)
+ref_dataset = dsp.temporal_subset(month_start, month_end,ref_dataset,average_each_year)
 for idata,dataset in enumerate(model_datasets):
-    model_datasets[idata] = dsp.temporal_subset(dataset,month_start, month_end,average_each_year)
+    model_datasets[idata] = dsp.temporal_subset(month_start, month_end,dataset,average_each_year)
 
 # generate grid points for regridding
 if config['regrid']['regrid_on_reference']:

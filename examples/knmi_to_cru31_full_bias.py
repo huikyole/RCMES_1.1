@@ -83,7 +83,7 @@ print("Calculating the Maximum Overlap in Time for the datasets")
 
 cru_start = datetime.datetime.strptime(cru_31['start_date'], "%Y-%m-%d")
 cru_end = datetime.datetime.strptime(cru_31['end_date'], "%Y-%m-%d")
-knmi_start, knmi_end = knmi_dataset.temporal_boundaries()
+knmi_start, knmi_end = knmi_dataset.time_range()
 # Grab the Max Start Time
 start_time = max([cru_start, knmi_start])
 # Grab the Min End Time
@@ -112,7 +112,7 @@ print("Our two datasets have a mis-match in time. We will subset on time to %s y
 
 # Create a Bounds object to use for subsetting
 new_bounds = Bounds(min_lat, max_lat, min_lon, max_lon, start_time, end_time)
-knmi_dataset = dsp.subset(knmi_dataset, new_bounds)
+knmi_dataset = dsp.subset(new_bounds, knmi_dataset)
 
 print("CRU31_Dataset.values shape: (times, lats, lons) - %s" % (cru31_dataset.values.shape,))
 print("KNMI_Dataset.values shape: (times, lats, lons) - %s \n" % (knmi_dataset.values.shape,))
