@@ -634,7 +634,7 @@ def run_screen(model_datasets, models_info, observations_info,
              screen.addstr(4, 4, "--> Data retrieved.")
              screen.refresh()
 
-             EVAL_BOUNDS = Bounds(overlap_min_lat, overlap_max_lat, overlap_min_lon, overlap_max_lon, overlap_start_time, overlap_end_time)
+             EVAL_BOUNDS = Bounds(overlap_min_lat, overlap_max_lat, overlap_min_lon, overlap_max_lon)
 
              screen.addstr(5, 4, "Temporally regridding...")
              screen.refresh()
@@ -643,10 +643,12 @@ def run_screen(model_datasets, models_info, observations_info,
 
              for member, each_target_dataset in enumerate(new_model_datasets):
                   new_model_datasets[member] = dsp.temporal_rebin(new_model_datasets[member], temp_grid_setting.lower())
-                  if each_target_dataset.lats.ndim !=2 and each_target_dataset.lons.ndim !=2:
-                      new_model_datasets[member] = dsp.subset(EVAL_BOUNDS, new_model_datasets[member])
-                  else:
-                      new_model_datasets[member] = dsp.temporal_slice(EVAL_BOUNDS.start, EVAL_BOUNDS.end, each_target_dataset)
+                  new_model_datasets[member] = dsp.normalize_dataset_datetimes(new_model_datasets[member], temp_grid_setting.lower())
+                  start_index = np.where(new_model_datasets[member].times >= overlap_start_time)[0][0]
+                  end_index = np.where(new_model_datasets[member].times <= overlap_end_time)[0][-1]
+                  #new_model_datasets[member] = dsp.subset(EVAL_BOUNDS, new_model_datasets[member])
+                  new_model_datasets[member].values=each_target_dataset.values[start_index:end_index+1,:]
+                  new_model_datasets[member].times=each_target_dataset.times[start_index:end_index+1]
              screen.addstr(5, 4, "--> Temporally regridded.")
              screen.refresh()
 
